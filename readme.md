@@ -1,0 +1,1 @@
+Good source of examples http://www.astro-electronic.de/FFmpeg_Book.pdf
