@@ -1,2 +1,0 @@
-file assets/videos/ukelele.mp4
-file assets/videos/extreme.mp4
