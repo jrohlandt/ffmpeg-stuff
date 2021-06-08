@@ -1,2 +1,3 @@
-_env.bat
+src/_env.bat
+src/node/_env.js
 node_modules
