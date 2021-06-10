@@ -1,4 +1,5 @@
 const path = require('path');
+const fs = require('fs');
 const {ffmpegPath, ffprobePath, vPath} = require('.\\_env.js');
 const ffmpeg = require('fluent-ffmpeg');
 
@@ -107,7 +108,7 @@ async function extractAudio(filePath, outDir) {
     });
 }
 
-async function extractAudioAndConvertToMP3(filePath, outDir) {
+async function extractAudioAndConvertToMP3(filePath, outDir, logPath="") {
     return new Promise(async (resolve, reject) => {
         try {
 
@@ -131,11 +132,18 @@ async function extractAudioAndConvertToMP3(filePath, outDir) {
                 ])
                 .saveToFile(outFilePath)
                 .on('start', (commandLine) => { console.log(`FFmpeg started with command:\n ${commandLine}\n`); })
-                .on('codecData', (codecData) => { console.log({codecData}); })
+                // .on('codecData', (codecData) => { console.log({codecData}); })
                 .on('progress', (progress) => { console.log({progress}); })
-                .on('error', (err) => { reject(err); })
+                .on('error', (err) => {
+                    if (logPath) {
+                        fs.appendFile(logPath, `${Date()}: ERROR: ${fileName} - ${err.message}.\n`, (err) => { if (err) console.log(err); });
+                    }
+                    reject(err); })
                 .on('end', (stdout, stderr) => { 
                     console.log(`FFmpeg end: Audio file ${fileName} written to ${outFilePath}.`); 
+                    if (logPath) {
+                        fs.appendFile(logPath, `${Date()}: File converted ${fileName}\n`, (err) => { if (err) console.log(err); });
+                    }
                     resolve(outFilePath);
                 });         
         } catch(err) {
