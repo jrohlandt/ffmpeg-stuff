@@ -6,7 +6,7 @@ Intro to FFmpeg commands and underlying libav libraries: https://github.com/lean
 For more detail: http://ffmpeg.org/ffmpeg.html 
 FFmpeg guides: http://trac.ffmpeg.org/wiki
 
-More detailed FFmpeg libav?s course: http://slhck.info/ffmpeg-encoding-course/#/
+More detailed FFmpeg course/slides: http://slhck.info/ffmpeg-encoding-course/#/
 
 For image processing : ImageMagick https://imagemagick.org/index.php. 
 I'm not sure but I think FFmpeg can do much (or some) of what ImageMagick does so if the project already used FFmpeg then definitely research what FFmpeg is capable of.
@@ -192,12 +192,39 @@ Scale to a height of 240 and keep the aspect ratio divisible by 2:
 $ ffmpeg -i video.mp4 -vf scale=w=-2:h=240 out.mp4
 ```
 
+Sometimes you need to scale the input image so that it fits into a specified rectangle, e.g. when consolidating material from different sources.
+
+You can achieve this with the force_original_aspect_ratio option. It has two possible values:
+
+decrease: The output video dimensions will automatically be decreased if needed.
+increase: The output video dimensions will automatically be increased if needed.
+This allows you to force the image to fit into a 320×240 box, downscaling it with the correct aspect ratio:
+```
+ffmpeg -i input.jpg -vf scale=w=320:h=240:force_original_aspect_ratio=decrease output_320.png
+```
 Not sure what devisible by 2 means but according to http://trac.ffmpeg.org/wiki/Scaling it is used 
 to keep the aspect ratio the same.
-They say to use -1.
+They say to use -1 though. See http://trac.ffmpeg.org/wiki/Scaling for more info on keeping aspect ratio.
+Also see https://superuser.com/questions/547296/resizing-videos-with-ffmpeg-avconv-to-fit-into-static-sized-player
 
-See http://trac.ffmpeg.org/wiki/Scaling for more info on keeping aspect ratio.
 
-TODO Jeandre continue here http://slhck.info/ffmpeg-encoding-course/#/37
+Padding:
+
+You can resize a video to a higher resolution then add borders to fill in the missing space.
+```
+$ ffmpeg -i video_1920x800.mp4 -vf "pad=1920:1080:(ow-iw)/2:(oh-ih)/2" video_1920x1080.mp4
+```
+Assuming the above input video has a width of 1920px and height of 800px the command will produce a 
+video that is 1920 x 1080 with black borders above and below the video content to compensate for the 
+extra 280 pixels in height.
+This command will also work if the input width is less than the output width.
+
+iw and ih is input width and input height 
+ow and iw is output width and output height
+
+To calculate how much vertical padding is needed subtract the ih from ow and then divide by two to 
+determine how much padding is needed at the top and bottom (oh - ih)/2.
+Same calculation is used for horizontal padding (ow - iw)/2.
+
 
 
