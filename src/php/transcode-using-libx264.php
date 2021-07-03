@@ -11,9 +11,11 @@ $ts = time();
 $cmd = [
     'ffmpeg', 
     '-i', 
-    "{$vPath}/ukelele.mp4", 
+    "{$vPath}/scanners.mkv", 
     '-c:v', 
-    'libx264', 
+    'libx264',
+    '-c:a',
+    'copy', 
     // '-framerate',
     // '25',
     "{$outDir}/temp_{$ts}.mp4"
@@ -22,13 +24,28 @@ $cmd = [
 
 
 $process = new Process($cmd);
+$process->setTimeout(3600);
 $process->start();
+
+// TODO use ffprobe to get totalFrames (or get duration and calc totalFrames durationInSeconds * framerate)
+$totalFrames = 6875;
 
 foreach($process as $type => $data) {
     if ($type === $process::OUT) {
         echo "\n STDOUT: {$data}\n";
     } else {
-        echo "\n STDERR: {$data}\n";
+        if (strpos($data, "frame=") !== false) {
+            $offset = 6;
+            $len = strpos($data, "fps=") - $offset;
+            $framesProcessed = trim(substr($data, $offset, $len));
+            $remaining = $totalFrames - (int) $framesProcessed;
+            $diff = $totalFrames - $remaining;
+            $p = ceil(($diff / $totalFrames) * 100);
+            echo "\nProgress: {$p}%\n";
+
+        } else {
+            echo "\n STDERR: {$data}\n";
+        }
     }
 }
 // if (!$process->isSuccessful()) {
