@@ -1,3 +1,5 @@
 src/_env.bat
 src/node/_env.js
 node_modules
+src/php/_env.php
+src/php/vendor
