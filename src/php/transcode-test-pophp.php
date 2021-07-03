@@ -1,24 +1,25 @@
 <?php
 require_once('./_env.php');
 
-$descriptor_spec = [
-    0 => ['pipe', 'r'],
-    1 => ['pipe', 'w'],
-    2 => ['pipe', 'w'],
-];
-
 $ts = time();
 $cmd = [
     'ffmpeg', 
     '-i', 
-    "{$vPath}/ukelele.mp4", 
+    "{$vPath}/scanners.mkv", 
     '-c:v', 
-    'libx264', 
+    // 'libx264', 
+    'copy',
     // '-framerate',
     // '25',
     "{$outDir}/temp_{$ts}.mp4"
 ];
 // $cmd = "ffmpeg -i {$vPath}/ukelele.mp4 -c:v libx264 {$outDir}/ukelele-{$rand}.mp4";
+
+$descriptor_spec = [
+    0 => ['pipe', 'r'],
+    1 => ['pipe', 'w'],
+    2 => ['pipe', 'w'],
+];
 
 $proc = proc_open($cmd, $descriptor_spec, $pipes, dirname(__FILE__), null);
 stream_set_blocking($pipes[1], false);
@@ -42,10 +43,6 @@ while($running) {
         echo PHP_EOL . "STDERR: {$stderr}" . PHP_EOL; 
     }
 }
-
-// while($stderr = stream_get_contents($pipes[2])) {
-//     echo PHP_EOL . "STDERR: {$stderr}" . PHP_EOL; 
-// }
 
 // var_dump($status);
 
