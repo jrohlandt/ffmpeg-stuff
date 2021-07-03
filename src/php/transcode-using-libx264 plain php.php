@@ -1,17 +1,11 @@
 <?php
+require_once('./_env.php');
 
 $descriptor_spec = [
     0 => ['pipe', 'r'],
     1 => ['pipe', 'w'],
     2 => ['pipe', 'w'],
 ];
-
-// var_dump(dirname(__FILE__));
-$projectRoot = '/home/jeandre/code/j/ffmpeg-stuff';
-$assetsPath = $projectRoot . '/assets';
-$vPath = $assetsPath . '/videos';
-$aPath = $assetsPath . '/audio';
-$outDir = $projectRoot . '/out';
 
 $ts = time();
 $cmd = [
